@@ -1,0 +1,62 @@
+<resources>
+    <string name="app_name">RunningAssistant</string>
+    <string name="mapbox_access_token">pk.eyJ1IjoidmlhdHVzIiwiYSI6ImNsMXowaXljYzBoejgza21xNHQ3bmk4MHIifQ.BQ0SatQOnQ70qwOZvIVa7g</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="start_training_text">Start training</string>
+    <string name="customize_audio_text">Customize audio</string>
+    <string name="customize_training_text">Customize training</string>
+    <string name="training_name_text">Training name</string>
+    <string name="intervals_text">Intervals</string>
+    <string name="enter_training_name_hint_text">Enter training name</string>
+    <string name="add_training_interval_text">Add training interval</string>
+    <string name="choose_training_options_text">Choose training options</string>
+    <string name="number_of_repeats_default_text">0</string>
+    <string name="warm_up_text">Warm-Up</string>
+    <string name="cool_down_text">Cool down</string>
+    <string name="save_training_text">Save training</string>
+    <string name="trainings_list_text">Trainings list</string>
+    <string name="add_new_training_text">Add new training</string>
+    <string name="choose_parameters_for_interval_text">Choose parameters for interval</string>
+    <string-array name="interval_types">
+        <item>Slow</item>
+        <item>Medium</item>
+        <item>Fast</item>
+    </string-array>
+    <string-array name="interval_mes_types">
+        <item>Time</item>
+        <item>Distance</item>
+    </string-array>
+    <string name="meters_text">meters</string>
+    <string name="seconds_text">seconds</string>
+    <string name="save_text">Save</string>
+    <string name="cancel_text">Cancel</string>
+    <string name="confirm_text">Confirm</string>
+    <string name="enable_audio_statistics_text">Enable audio statistics</string>
+    <string name="on_distance_travelled_text">On distance travelled</string>
+    <string name="audio_stat_hint_text">0 means no updates</string>
+    <string name="audio_stat_default_text">0</string>
+    <string name="on_time_passed_text">On time passed</string>
+    <string name="distance_travelled_text">Distance travelled</string>
+    <string name="time_passed_text">Time passed</string>
+    <string name="current_speed_text">Current speed</string>
+    <string name="average_speed_on_current_interval_text">Average speed on current interval</string>
+    <string name="save_audio_customization_text">Save audio customization</string>
+    <string name="preference_training_name_key">Training name</string>
+    <string name="preference_enable_audio_key">Enable audio</string>
+    <string name="preference_distance_update_key">Distance update</string>
+    <string name="preference_time_update_key">Time update</string>
+    <string name="preference_distance_travelled_key">Total distance</string>
+    <string name="preference_time_passed_key">Total time</string>
+    <string name="preference_current_speed_key">Current speed</string>
+    <string name="preference_average_speed_key">Average speed</string>
+    <string name="number_of_repeats_hint_text">Number of repeats</string>
+    <string name="save_training_result_text">Save training result</string>
+    <string name="training_results_text">Training results</string>
+    <string name="go_to_training_screen_text">Go to training screen</string>
+    <string name="km_text">km</string>
+    <string name="minutes_text">minutes</string>
+    <string name="km_h_text">km/h</string>
+    <string name="condition_image_text">Condition image</string>
+
+</resources>

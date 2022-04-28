@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/training_nav_graph"
+    app:startDestination="@id/mainFragment">
+
+    <fragment
+        android:id="@+id/audioCustomizationFragment"
+        android:name="com.example.runningassistant.view.fragments.AudioCustomizationFragment"
+        android:label="fragment_audio_customization"
+        tools:layout="@layout/fragment_audio_customization" >
+        <action
+            android:id="@+id/action_audioCustomizationFragment_to_mainFragment"
+            app:destination="@id/mainFragment"
+            app:popUpTo="@id/mainFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="com.example.runningassistant.view.fragments.MainFragment"
+        android:label="fragment_main"
+        tools:layout="@layout/fragment_main" >
+        <action
+            android:id="@+id/action_mainFragment_to_audioCustomizationFragment"
+            app:destination="@id/audioCustomizationFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_trainingSelectionFragment"
+            app:destination="@id/trainingSelectionFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_trainingSaveFragment"
+            app:destination="@id/trainingSaveFragment" >
+            <argument
+                android:name="totalDistance"
+                app:argType="float"
+                app:nullable="false"
+                android:defaultValue="0" />
+            <argument
+                android:name="totalTime"
+                app:argType="integer"
+                app:nullable="false"
+                android:defaultValue="0" />
+            <argument
+                android:name="pointsList"
+                app:argType="string"
+                app:nullable="true"
+                android:defaultValue="null" />
+            <argument
+                android:name="averageSpeed"
+                app:argType="float"
+                app:nullable="false"
+                android:defaultValue="0" />
+        </action>
+    </fragment>
+    <fragment
+        android:id="@+id/trainingSelectionFragment"
+        android:name="com.example.runningassistant.view.fragments.TrainingSelectionFragment"
+        android:label="fragment_training_selection"
+        tools:layout="@layout/fragment_training_selection" >
+        <action
+            android:id="@+id/action_trainingSelectionFragment_to_trainingCreationFragment"
+            app:destination="@id/trainingCreationFragment" >
+            <argument
+                android:name="trainingTitle"
+                app:argType="string"
+                app:nullable="true"
+                android:defaultValue="null" />
+        </action>
+        <action
+            android:id="@+id/action_trainingSelectionFragment_to_mainFragment"
+            app:destination="@id/mainFragment"
+            app:popUpTo="@id/mainFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/trainingCreationFragment"
+        android:name="com.example.runningassistant.view.fragments.TrainingCreationFragment"
+        android:label="fragment_training_creation"
+        tools:layout="@layout/fragment_training_creation" >
+        <action
+            android:id="@+id/action_trainingCreationFragment_to_trainingSelectionFragment"
+            app:destination="@id/trainingSelectionFragment"
+            app:popUpTo="@id/trainingSelectionFragment"
+            app:popUpToInclusive="true" />
+        <argument
+            android:name="trainingTitle"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+    </fragment>
+    <fragment
+        android:id="@+id/trainingSaveFragment"
+        android:name="com.example.runningassistant.view.fragments.TrainingSaveFragment"
+        android:label="TrainingSaveFragment" >
+        <action
+            android:id="@+id/action_trainingSaveFragment_to_mainFragment"
+            app:destination="@id/mainFragment"
+            app:popUpTo="@id/mainFragment"
+            app:popUpToInclusive="true" />
+        <argument
+            android:name="totalDistance"
+            app:argType="float"
+            app:nullable="false"
+            android:defaultValue="0" />
+        <argument
+            android:name="totalTime"
+            app:argType="integer"
+            app:nullable="false"
+            android:defaultValue="0" />
+        <argument
+            android:name="pointsList"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="averageSpeed"
+            app:argType="float"
+            app:nullable="false"
+            android:defaultValue="0" />
+    </fragment>
+</navigation>

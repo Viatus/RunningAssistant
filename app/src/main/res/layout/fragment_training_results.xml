@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="trainingResultsList"
+            type="java.util.List&lt;com.example.runningassistant.model.TrainingResultTableModel>" />
+
+        <variable
+            name="onTrainingResultClickHandler"
+            type="com.example.runningassistant.view.adapters.TrainingResultsRecyclerViewAdapter.OnTrainingResultClickHandlerInterface" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".view.fragments.TrainingResultsFragment">
+
+        <TextView
+            android:id="@+id/trainingsResultsListLabel"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@color/gray"
+            android:padding="5dp"
+            android:text="@string/training_results_text"
+            android:textSize="20sp"
+            android:textColor="@color/black"
+            app:layout_constraintBottom_toTopOf="@id/trainingResultsRecyclerView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/trainingResultsRecyclerView"
+            onTrainingResultClickHandler="@{onTrainingResultClickHandler}"
+            trainingResults="@{trainingResultsList}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/trainingsResultsListLabel"
+            android:background="@color/light_gray"
+            />
+
+        <Button
+            android:id="@+id/buttonGoToTrainingScreen"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_margin="10dp"
+            android:text="@string/go_to_training_screen_text"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

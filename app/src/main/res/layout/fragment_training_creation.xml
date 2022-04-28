@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="intervalsList"
+            type="java.util.List&lt;com.example.runningassistant.model.IntervalItem>" />
+        <variable
+            name="intervalRecyclerAdapterInterfaceImpl"
+            type="com.example.runningassistant.view.adapters.IntervalsRecyclerViewAdapter.IntervalRecyclerAdapterInterface" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".view.fragments.TrainingCreationFragment">
+
+
+        <TextView
+            android:id="@+id/trainingNameLabel"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:background="@color/gray"
+            android:padding="5dp"
+            android:text="@string/training_name_text"
+            android:textColor="@color/black"
+            app:layout_constraintBottom_toTopOf="@id/trainingName"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:inputType="text"
+            android:id="@+id/trainingName"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            app:layout_constraintTop_toBottomOf="@id/trainingNameLabel"
+            app:layout_constraintBottom_toTopOf="@id/trainingIntervalsLabel"
+            app:layout_constraintStart_toStartOf="parent"
+            android:hint="@string/enter_training_name_hint_text"
+            android:padding="5dp"
+            android:importantForAutofill="no" />
+
+        <TextView
+            android:id="@+id/trainingIntervalsLabel"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            app:layout_constraintTop_toBottomOf="@id/trainingName"
+            app:layout_constraintStart_toStartOf="parent"
+            android:text="@string/intervals_text"
+            android:padding="5dp"
+            android:background="@color/gray"
+            android:textColor="@color/black"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/intervalsRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/trainingIntervalsLabel"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/addInterval"
+            app:intervalItemViewModels="@{intervalsList}"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:onIntervalLongClickedHandler="@{intervalRecyclerAdapterInterfaceImpl}"
+            />
+
+        <TextView
+            android:id="@+id/addInterval"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:textAlignment="center"
+            android:gravity="center"
+            android:textColor="@color/black"
+            app:layout_constraintTop_toBottomOf="@id/intervalsRecyclerView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/optionsLabel"
+            android:padding="5dp"
+            android:text="@string/add_training_interval_text"
+            />
+
+        <TextView
+            android:id="@+id/optionsLabel"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            app:layout_constraintTop_toBottomOf="@id/addInterval"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/repeatsEditText"
+            android:text="@string/choose_training_options_text"
+            android:padding="5dp"
+            android:background="@color/gray"
+            android:textColor="@color/black"/>
+
+        <EditText
+            android:inputType="number"
+            android:id="@+id/repeatsEditText"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toBottomOf="@id/optionsLabel"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/warmUpCheck"
+            android:padding="5dp"
+            android:hint="@string/number_of_repeats_hint_text"
+            android:importantForAutofill="no" />
+
+        <CheckBox
+            android:id="@+id/warmUpCheck"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/repeatsEditText"
+            app:layout_constraintBottom_toTopOf="@id/coolDownCheck"
+            android:text="@string/warm_up_text"/>
+
+        <CheckBox
+            android:id="@+id/coolDownCheck"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/warmUpCheck"
+            app:layout_constraintBottom_toTopOf="@id/buttonCreateTraining"
+            android:text="@string/cool_down_text"/>
+
+        <Button
+            android:id="@+id/buttonCreateTraining"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toBottomOf="@id/coolDownCheck"
+            android:layout_margin="20dp"
+            app:layout_constraintStart_toStartOf="parent"
+            android:text="@string/save_training_text"/>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
