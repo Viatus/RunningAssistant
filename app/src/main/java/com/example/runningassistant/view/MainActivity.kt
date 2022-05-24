@@ -9,6 +9,11 @@ import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.FragmentContainerView
+import androidx.navigation.Navigation
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupActionBarWithNavController
 import com.example.runningassistant.R
 import com.example.runningassistant.databinding.ActivityMainBinding
 
@@ -21,6 +26,15 @@ class MainActivity : AppCompatActivity() {
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
+       val navHostFragment = supportFragmentManager
+            .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+
+        setupActionBarWithNavController(navHostFragment.navController)
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        return findViewById<FragmentContainerView>(R.id.nav_host_fragment).findNavController()
+            .navigateUp() || super.onSupportNavigateUp()
     }
 
     fun checkPermission(permission: String, requestCode: Int): Boolean {

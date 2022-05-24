@@ -14,8 +14,11 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.example.runningassistant.R
@@ -23,6 +26,7 @@ import com.example.runningassistant.databinding.FragmentMainBinding
 import com.example.runningassistant.model.TrainingExecution
 import com.example.runningassistant.model.TrainingTableModel
 import com.example.runningassistant.model.IntervalItem
+import com.example.runningassistant.retrofit.WeatherApiInterface
 import com.example.runningassistant.viewmodel.TrainingViewModel
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -47,7 +51,6 @@ import com.mapbox.navigation.core.trip.session.LocationObserver
 import java.util.*
 
 
-//make polyline global and add points
 class MainFragment : Fragment() {
 
     private lateinit var binding: FragmentMainBinding
@@ -62,6 +65,13 @@ class MainFragment : Fragment() {
     private var isVoiceCurrentSpeed = false
     private var isVoiceAverageSpeed = false
 
+    private var finalPoints: List<Point> = emptyList()
+    private var finalSpeeds: List<Float> = emptyList()
+    private var finalTotalDistance = 0F
+    private var finalTotalTime = 0
+    private var finalIntervalEndIndexes: List<Int> = emptyList()
+    private var isSaveNeeded = false
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -74,8 +84,12 @@ class MainFragment : Fragment() {
                 ""
             ) ?: ""
         )
-
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_main, container, false)
+
+        binding.chooseTrainingButton.text = sharedPref?.getString(
+            getString(R.string.preference_training_name_key),
+            ""
+        ) ?: ""
 
         binding.chooseAudioButton.setOnClickListener {
             findNavController().navigate(R.id.action_mainFragment_to_audioCustomizationFragment)
@@ -122,7 +136,6 @@ class MainFragment : Fragment() {
                                 binding.startButton.visibility = View.INVISIBLE
                                 binding.chooseTrainingButton.visibility = View.INVISIBLE
                                 binding.chooseAudioButton.visibility = View.INVISIBLE
-
                             }
 
                         }
@@ -131,6 +144,37 @@ class MainFragment : Fragment() {
         }
 
         onMapReady()
+
+        trainingViewModel.liveDataCurrentWeather.observe(viewLifecycleOwner) {
+            Log.i("weather", it.toString())
+            binding.weatherDegree.text =
+                getString(R.string.temperature_text, it.temperature.toString())
+            binding.weatherImage.setImageDrawable(
+                when (it.weatherCode) {
+                    WeatherApiInterface.CLEAR_SKY -> ResourcesCompat.getDrawable(
+                        resources,
+                        R.drawable.ic_baseline_wb_sunny_yellow_24,
+                        null
+                    )
+                    WeatherApiInterface.PARTLY_CLOUDY, WeatherApiInterface.MAINLY_CLEAR, WeatherApiInterface.OVERCAST -> ResourcesCompat.getDrawable(
+                        resources,
+                        R.drawable.ic_baseline_wb_cloudy_white_24,
+                        null
+                    )
+                    WeatherApiInterface.DRIZZLE_LIGHT, WeatherApiInterface.DRIZZLE_DENSE, WeatherApiInterface.DRIZZLE_MODERATE,
+                    WeatherApiInterface.RAIN_MODERATE, WeatherApiInterface.RAIN_HEAVY, WeatherApiInterface.RAIN_SLIGHT -> ResourcesCompat.getDrawable(
+                        resources,
+                        R.drawable.ic_baseline_wb_cloudy_grey_24,
+                        null
+                    )
+                    else -> ResourcesCompat.getDrawable(
+                        resources,
+                        R.drawable.ic_baseline_wb_cloudy_white_24,
+                        null
+                    )
+                }
+            )
+        }
 
         return binding.root
     }
@@ -199,6 +243,34 @@ class MainFragment : Fragment() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (isSaveNeeded) {
+            val gson = Gson()
+            var type = object : TypeToken<List<Point>>() {}.type
+            val pointsString = gson.toJson(finalPoints, type)
+            type = object : TypeToken<List<Int>>() {}.type
+            val intervalEndIndexesString = gson.toJson(finalIntervalEndIndexes, type)
+            type = object : TypeToken<List<Float>>() {}.type
+            val finalSpeedsString = gson.toJson(finalSpeeds, type)
+
+
+            val action =
+                MainFragmentDirections.actionMainFragmentToTrainingSaveFragment(
+                    finalTotalDistance,
+                    finalTotalTime,
+                    pointsString,
+                    intervalEndIndexesString,
+                    finalSpeedsString,
+                    if (finalTotalTime != 0) finalTotalDistance / finalTotalTime else 0F
+                )
+            findNavController().navigate(action)
+            isSaveNeeded = false
+        } else {
+            isWeatherFetched = false
+        }
+    }
+
     //Map specific things
     private val points: MutableList<Point> = mutableListOf()
 
@@ -206,9 +278,15 @@ class MainFragment : Fragment() {
         binding.mapView.getMapboxMap().setCamera(CameraOptions.Builder().bearing(it).build())
     }
 
+    private var isWeatherFetched = false
+
     private val onIndicatorPositionChangedListener = OnIndicatorPositionChangedListener {
         binding.mapView.getMapboxMap().setCamera(CameraOptions.Builder().center(it).build())
         binding.mapView.gestures.focalPoint = binding.mapView.getMapboxMap().pixelForCoordinate(it)
+        if (!isWeatherFetched) {
+            trainingViewModel.getCurrentWeather(it.longitude().toFloat(), it.latitude().toFloat())
+            isWeatherFetched = true
+        }
     }
 
     private val onMoveListener = object : OnMoveListener {
@@ -237,6 +315,8 @@ class MainFragment : Fragment() {
             initLocationComponent()
             setupGesturesListener()
         }
+
+        binding.mapView
     }
 
     private fun setupGesturesListener() {
@@ -290,14 +370,18 @@ class MainFragment : Fragment() {
     private fun addNewPoint(newPoint: Point) {
         points.add(newPoint)
         Log.i("MainFragment-points", "new point added to list:$newPoint")
-        val annotationsApi = binding.mapView.annotations
+        if (lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
+            val annotationsApi = binding.mapView.annotations
 
-        val polylineAnnotationManager = annotationsApi.createPolylineAnnotationManager()
-        val polylineAnnotationOptions =
-            PolylineAnnotationOptions().withPoints(points).withLineColor("#ee4e8b")
-                .withLineWidth(5.0)
+            val polylineAnnotationManager = annotationsApi.createPolylineAnnotationManager()
+            polylineAnnotationManager.deleteAll()
+            val polylineAnnotationOptions =
+                PolylineAnnotationOptions().withPoints(points).withLineColor("#ee4e8b")
+                    .withLineWidth(5.0)
 
-        polylineAnnotationManager.create(polylineAnnotationOptions)
+
+            polylineAnnotationManager.create(polylineAnnotationOptions)
+        }
     }
 
     private val locationObserver = object : LocationObserver {
@@ -317,7 +401,8 @@ class MainFragment : Fragment() {
         override fun onTrainingIsOver(
             locationList: List<Location>,
             totalDistance: Float,
-            totalTime: Int
+            totalTime: Int,
+            intervalEndIndexes: List<Int>
         ) {
             if (isTtsInitFinished) {
                 tts!!.speak("Training is over", TextToSpeech.QUEUE_ADD, null, "")
@@ -335,22 +420,42 @@ class MainFragment : Fragment() {
             binding.startButton.visibility = View.VISIBLE
             binding.chooseTrainingButton.visibility = View.VISIBLE
             binding.chooseAudioButton.visibility = View.VISIBLE
-            val points: List<Point> = List(locationList.size) { index ->
+            finalPoints = List(locationList.size) { index ->
                 Point.fromLngLat(locationList[index].longitude, locationList[index].latitude)
             }
 
-            val gson = Gson()
-            val type = object : TypeToken<List<Point>>() {}.type
-            val pointsString = gson.toJson(points, type)
+            finalSpeeds = List(locationList.size) { index ->
+                locationList[index].speed
+            }
 
-            val action =
-                MainFragmentDirections.actionMainFragmentToTrainingSaveFragment(
-                    totalDistance,
-                    totalTime,
-                    pointsString,
-                    if (totalTime != 0) totalDistance / totalTime else 0F
-                )
-            findNavController().navigate(action)
+            finalTotalTime = totalTime
+            finalTotalDistance = totalDistance
+            finalIntervalEndIndexes = intervalEndIndexes
+
+            if (lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
+                val gson = Gson()
+                var type = object : TypeToken<List<Point>>() {}.type
+                val pointsString = gson.toJson(finalPoints, type)
+
+                type = object : TypeToken<List<Int>>() {}.type
+                val intervalEndIndexesString = gson.toJson(finalIntervalEndIndexes, type)
+                type = object : TypeToken<List<Float>>() {}.type
+                val finalSpeedsString = gson.toJson(finalSpeeds, type)
+
+                val action =
+                    MainFragmentDirections.actionMainFragmentToTrainingSaveFragment(
+                        finalTotalDistance,
+                        finalTotalTime,
+                        pointsString,
+                        intervalEndIndexesString,
+                        finalSpeedsString,
+                        if (finalTotalTime != 0) finalTotalDistance / finalTotalTime else 0F
+                    )
+                findNavController().navigate(action)
+            } else {
+                isSaveNeeded = true
+            }
+
         }
 
         override fun onIntervalStarted(
@@ -373,11 +478,28 @@ class MainFragment : Fragment() {
                 }
                 tts!!.speak(str.toString(), TextToSpeech.QUEUE_ADD, null, "")
             }
-            Toast.makeText(
-                requireContext(),
-                "Started interval on distance:$isIntervalDistance with type:$intervalType\n Goal: $goal",
-                Toast.LENGTH_SHORT
-            ).show()
+            val typeStr = when (intervalType) {
+                IntervalItem.INTERVAL_TYPE_SLOW ->
+                    resources.getStringArray(R.array.interval_types)[IntervalItem.INTERVAL_TYPE_SLOW]
+                IntervalItem.INTERVAL_TYPE_NORMAL ->
+                    resources.getStringArray(R.array.interval_types)[IntervalItem.INTERVAL_TYPE_NORMAL]
+                IntervalItem.INTERVAL_TYPE_FAST ->
+                    resources.getStringArray(R.array.interval_types)[IntervalItem.INTERVAL_TYPE_FAST]
+                else -> ""
+            }
+            if (isIntervalDistance) {
+                Toast.makeText(
+                    requireContext(),
+                    "Started new interval: $typeStr for $goal meters",
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                Toast.makeText(
+                    requireContext(),
+                    "Started new interval: $typeStr for $goal seconds",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
 
         override fun onUpdateTimeCame(

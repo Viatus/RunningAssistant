@@ -32,7 +32,7 @@
     <string name="save_text">Save</string>
     <string name="cancel_text">Cancel</string>
     <string name="confirm_text">Confirm</string>
-    <string name="enable_audio_statistics_text">Enable audio statistics</string>
+    <string name="enable_audio_statistics_text">Enable audio notifications</string>
     <string name="on_distance_travelled_text">On distance travelled</string>
     <string name="audio_stat_hint_text">0 means no updates</string>
     <string name="audio_stat_default_text">0</string>
@@ -58,5 +58,17 @@
     <string name="minutes_text">minutes</string>
     <string name="km_h_text">km/h</string>
     <string name="condition_image_text">Condition image</string>
+    <string name="how_do_you_feel_text">How do you feel?</string>
+    <string name="past_trainings_text">Past trainings</string>
+    <string name="training_text">Training</string>
+    <string name="customize_audio_title">Customize audio settings</string>
+    <string name="main_fragment_title">Training</string>
+    <string name="training_selection_fragment_title">Select training</string>
+    <string name="training_creation_fragment_title">Create training</string>
+    <string name="training_save_fragment_title">Save training</string>
+    <string name="training_results_fragment_title">Past trainings</string>
+    <string name="training_details_fragment_title">Training details</string>
+    <string name="weather_icon_text">Weather icon</string>
+    <string name="temperature_text">%s°C</string>
 
 </resources>

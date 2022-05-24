@@ -35,7 +35,9 @@ class TrainingSaveFragment : Fragment() {
     private var totalDistance: Float = 0F
     private var averageSpeed: Float = 0F
     private var totalTime = 0
-    private var pointsList: List<Point> = listOf()
+    private var pointsList: List<Point> = emptyList()
+    private var intervalEndIndexes: List<Int> = emptyList()
+    private var speedsList: List<Float> = emptyList()
     private var currentTime: Date = Date()
 
 
@@ -50,16 +52,30 @@ class TrainingSaveFragment : Fragment() {
 
         totalDistance = args.totalDistance
         binding.totalDistanceTexView.text =
-            String.format(Locale.getDefault(), "%.2f", totalDistance/1000)
+            String.format(Locale.getDefault(), "%.2f", totalDistance / 1000)
         totalTime = args.totalTime
         binding.totalTimeTexView.text =
             String.format(Locale.getDefault(), "%d:%d", totalTime / 60, totalTime % 60)
-        averageSpeed = args.averageSpeed
+        averageSpeed = args.averageSpeed / 1000 * 3600
         binding.averageSpeedTextView.text = String.format(Locale.getDefault(), "%.2f", averageSpeed)
         pointsList = if (args.pointsList != null) {
             val gson = Gson()
             val type = object : TypeToken<List<Point>>() {}.type
             gson.fromJson(args.pointsList, type)
+        } else {
+            emptyList()
+        }
+        intervalEndIndexes = if (args.intervalEndIndexes != null) {
+            val gson = Gson()
+            val type = object : TypeToken<List<Int>>() {}.type
+            gson.fromJson(args.intervalEndIndexes, type)
+        } else {
+            emptyList()
+        }
+        speedsList = if (args.speedsList != null) {
+            val gson = Gson()
+            val type = object : TypeToken<List<Float>>() {}.type
+            gson.fromJson(args.speedsList, type)
         } else {
             emptyList()
         }
@@ -147,7 +163,8 @@ class TrainingSaveFragment : Fragment() {
                 totalDistance,
                 totalTime,
                 if (binding.chosenCondition == null) 0 else binding.chosenCondition!!,
-                averageSpeed,
+                intervalEndIndexes,
+                speedsList,
                 currentTime
             )
             findNavController().navigate(R.id.action_trainingSaveFragment_to_mainFragment)

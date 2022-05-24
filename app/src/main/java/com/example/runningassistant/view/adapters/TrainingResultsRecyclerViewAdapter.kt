@@ -10,14 +10,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.runningassistant.R
 import com.example.runningassistant.databinding.ItemTrainingResultBinding
 import com.example.runningassistant.model.TrainingResultTableModel
-import com.mapbox.geojson.Point
-import com.mapbox.maps.CameraOptions
-import com.mapbox.maps.Style
-import com.mapbox.maps.plugin.annotation.annotations
-import com.mapbox.maps.plugin.annotation.generated.CircleAnnotationOptions
-import com.mapbox.maps.plugin.annotation.generated.PolylineAnnotationOptions
-import com.mapbox.maps.plugin.annotation.generated.createCircleAnnotationManager
-import com.mapbox.maps.plugin.annotation.generated.createPolylineAnnotationManager
 import java.lang.StringBuilder
 import java.util.*
 
@@ -25,7 +17,7 @@ class TrainingResultsRecyclerViewAdapter(private val onTrainingResultClickHandle
     RecyclerView.Adapter<TrainingResultsRecyclerViewAdapter.BindableViewHolder>() {
 
     interface OnTrainingResultClickHandlerInterface {
-        fun onTrainingResultsClicked()
+        fun onTrainingResultsClicked(trainingResult: TrainingResultTableModel)
     }
 
     private var trainingResults: List<TrainingResultTableModel> = emptyList()
@@ -117,7 +109,7 @@ class TrainingResultsRecyclerViewAdapter(private val onTrainingResultClickHandle
                 in 0..4, in 22..24 -> dateStr.append(" - Night")
                 in 5..12 -> dateStr.append(" - Morning")
                 in 13..17 -> dateStr.append(" - Day")
-                in 18..21 -> dateStr.append("Evening")
+                in 18..21 -> dateStr.append(" - Evening")
             }
 
             binding.dateTextView.text = dateStr.toString()
@@ -127,59 +119,15 @@ class TrainingResultsRecyclerViewAdapter(private val onTrainingResultClickHandle
             binding.totalTimeTexView.text =
                 String.format(
                     Locale.getDefault(),
-                    "%d:%d",
+                    "%d:%02d",
                     trainingResult.TotalTime / 60,
                     trainingResult.TotalTime % 60
                 )
             binding.averageSpeedTextView.text =
-                String.format(Locale.getDefault(), "%.2f", trainingResult.AverageSpeed)
-
-            //map setup
-            binding.trainingResultMapView.getMapboxMap().loadStyleUri(
-                Style.MAPBOX_STREETS
-            )
-
-
-            val cameraOptions = CameraOptions.Builder()
-                .center(trainingResult.PointsList[0])
-                .zoom(15.5)
-                .build()
-
-            binding.trainingResultMapView.getMapboxMap().setCamera(cameraOptions)
-
-            val annotationsApi = binding.trainingResultMapView.annotations
-
-            //Path
-            val polylineAnnotationManager = annotationsApi.createPolylineAnnotationManager()
-
-            val polylineAnnotationOptions =
-                PolylineAnnotationOptions().withPoints(trainingResult.PointsList).withLineColor("#ee4e8b")
-                    .withLineWidth(5.0)
-
-            polylineAnnotationManager.create(polylineAnnotationOptions)
-
-            //Start and finish
-            val circleAnnotationManager = annotationsApi.createCircleAnnotationManager()
-            var circleAnnotationOptions = CircleAnnotationOptions()
-                .withPoint(trainingResult.PointsList[0])
-                .withCircleRadius(8.0)
-                .withCircleColor("#ee4e8b")
-                .withCircleStrokeWidth(2.0)
-                .withCircleStrokeColor("#ffffff")
-
-            circleAnnotationManager.create(circleAnnotationOptions)
-
-            circleAnnotationOptions = CircleAnnotationOptions()
-                .withPoint(trainingResult.PointsList.last())
-                .withCircleRadius(8.0)
-                .withCircleColor("#ee4e8b")
-                .withCircleStrokeWidth(2.0)
-                .withCircleStrokeColor("#ffffff")
-
-            circleAnnotationManager.create(circleAnnotationOptions)
+                String.format(Locale.getDefault(), "%.2f", trainingResult.TotalDistance / 1000 / trainingResult.TotalTime * 3600)
 
             binding.root.setOnClickListener {
-                onTrainingResultClickHandler.onTrainingResultsClicked()
+                onTrainingResultClickHandler.onTrainingResultsClicked(trainingResult)
             }
         }
 

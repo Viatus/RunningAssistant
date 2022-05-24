@@ -12,6 +12,12 @@ class TrainingResultTableModel(
     @ColumnInfo(name = "Points_list")
     var PointsList: List<Point>,
 
+    @ColumnInfo(name = "Interval_end_indices")
+    var IntervalEndIndices: List<Int>,
+
+    @ColumnInfo(name = "Speeds_List")
+    var SpeedsList: List<Float>,
+
     @ColumnInfo(name = "Total_distance")
     var TotalDistance: Float,
 
@@ -20,9 +26,6 @@ class TrainingResultTableModel(
 
     @ColumnInfo(name = "Condition")
     var Condition: Int,
-
-    @ColumnInfo(name = "Average_speed")
-    var AverageSpeed: Float,
 
     @ColumnInfo(name = "Training_Date")
     var TrainingDate: Date

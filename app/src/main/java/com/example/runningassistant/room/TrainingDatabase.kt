@@ -14,7 +14,7 @@ import java.util.*
 
 @Database(
     entities = [TrainingTableModel::class, TrainingResultTableModel::class],
-    version = 7,
+    version = 8,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -84,5 +84,33 @@ class Converters {
     @TypeConverter
     fun dateToTimestamp(value: Date): Long {
         return value.time
+    }
+
+    @TypeConverter
+    fun fromIntList(value: List<Int>?): String {
+        val gson = Gson()
+        val type = object : TypeToken<List<Int>>() {}.type
+        return gson.toJson(value, type)
+    }
+
+    @TypeConverter
+    fun toIntList(value: String): List<Int> {
+        val gson = Gson()
+        val type = object : TypeToken<List<Int>>() {}.type
+        return gson.fromJson(value, type)
+    }
+
+    @TypeConverter
+    fun fromFloatList(value: List<Float>?): String {
+        val gson = Gson()
+        val type = object : TypeToken<List<Float>>() {}.type
+        return gson.toJson(value, type)
+    }
+
+    @TypeConverter
+    fun toFloatList(value: String): List<Float> {
+        val gson = Gson()
+        val type = object : TypeToken<List<Float>>() {}.type
+        return gson.fromJson(value, type)
     }
 }

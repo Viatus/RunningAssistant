@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -18,49 +18,79 @@
             android:layout_height="match_parent"
             app:mapbox_cameraZoom="9.0" />
 
+        <LinearLayout
+            android:layout_width="80dp"
+            android:layout_height="60dp"
+            android:layout_gravity="end"
+            android:layout_margin="30dp"
+            android:orientation="vertical"
+            android:background="@drawable/weather_background"
+            >
+
+            <ImageView
+                android:id="@+id/weather_image"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.65"
+                android:contentDescription="@string/weather_icon_text" />
+
+            <TextView
+                android:id="@+id/weather_degree"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.35"
+                android:textColor="@color/black"
+                android:gravity="center"/>
+        </LinearLayout>
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom">
-        <Button
-            android:id="@+id/chooseTrainingButton"
-            android:layout_width="0dp"
-            android:layout_height="70dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/startButton"
-            app:layout_constraintEnd_toStartOf="@id/chooseAudioButton"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
-            android:text="@string/customize_training_text"
-            android:contentDescription="@string/customize_training_text" />
+            android:layout_height="60dp"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="30dp">
 
-        <Button
-            android:id="@+id/chooseAudioButton"
-            android:layout_width="0dp"
-            android:layout_height="70dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/startButton"
-            app:layout_constraintStart_toEndOf="@id/chooseTrainingButton"
-            android:layout_marginHorizontal="10dp"
-            android:layout_marginTop="10dp"
-            android:text="@string/customize_audio_text"
-            android:contentDescription="@string/customize_audio_text" />
 
-        <Button
-            android:id="@+id/startButton"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/chooseAudioButton"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_marginBottom="10dp"
-            android:layout_marginHorizontal="10dp"
-            android:background="@drawable/roundedbutton"
-            android:text="@string/start_training_text"
-            android:contentDescription="@string/start_training_text" />
+            <ImageView
+                android:id="@+id/chooseAudioButton"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="50dp"
+                android:background="@drawable/background_rounded_left"
+                android:contentDescription="@string/customize_audio_text"
+                android:src="@drawable/ic_baseline_volume_24"
+                android:text="@string/customize_audio_text"
+                app:layout_constraintEnd_toStartOf="@id/chooseTrainingButton"
+                app:layout_constraintHorizontal_weight="0.2"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/chooseTrainingButton"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:contentDescription="@string/customize_training_text"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:padding="0dp"
+                app:cornerRadius="0dp"
+                app:layout_constraintEnd_toStartOf="@id/startButton"
+                app:layout_constraintHorizontal_weight="0.6"
+                app:layout_constraintStart_toEndOf="@id/chooseAudioButton"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/startButton"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="50dp"
+                android:background="@drawable/background_rounded_right"
+                android:contentDescription="@string/start_training_text"
+                android:src="@drawable/ic_baseline_play_arrow_24"
+                android:text="@string/start_training_text"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_weight="0.2"
+                app:layout_constraintStart_toEndOf="@id/chooseTrainingButton"
+                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </FrameLayout>

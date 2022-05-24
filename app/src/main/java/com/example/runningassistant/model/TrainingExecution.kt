@@ -12,7 +12,7 @@ class TrainingExecution(
 ) {
 
     interface TrainingExecutionListener {
-        fun onTrainingIsOver(locationList: List<Location>, totalDistance: Float, totalTime: Int)
+        fun onTrainingIsOver(locationList: List<Location>, totalDistance: Float, totalTime: Int, intervalEndIndexes: List<Int>)
         fun onIntervalStarted(isIntervalDistance: Boolean, goal: Float, intervalType: Int)
         fun onUpdateTimeCame(
             timePassed: Int,
@@ -61,19 +61,14 @@ class TrainingExecution(
 
             if (locationsList.isEmpty()) {
                 locationsList.add(rawLocation)
-                /*withContext(Dispatchers.Main) {
-                    TrainingRepo.locationsList.value = locationsList
-                }*/
             } else {
                 val oldLocation = locationsList.last()
                 val distanceCompleted = rawLocation.distanceTo(oldLocation)
                 totalDistanceTravelled += distanceCompleted
                 locationsList.add(rawLocation)
                 lastTrackedSpeed = rawLocation.speed
-                /*withContext(Dispatchers.Main) {
-                    TrainingRepo.locationsList.value = locationsList
-                }*/
                 if (isCurrentIntervalIsDistance && currentInterval >= -1) {
+                    Log.i("TrainingExecution", "currentIntervalDistanceLeft=$currentIntervalDistanceLeft; distanceCompleted=$distanceCompleted")
                     currentIntervalDistanceLeft -= distanceCompleted
                     if (currentIntervalDistanceLeft <= 0) {
                         advanceInterval()
@@ -110,9 +105,8 @@ class TrainingExecution(
                 }
                 Log.i("TrainingExecution", "Finished training execution")
                 isTrainingOngoing = false
-                //add interval cutoff points perhaps
                 withContext(Dispatchers.Main) {
-                    trainingExecutionListener.onTrainingIsOver(locationsList, totalDistanceTravelled, currentTimeSeconds)
+                    trainingExecutionListener.onTrainingIsOver(locationsList, totalDistanceTravelled, currentTimeSeconds, intervalLastPointIndexes)
                 }
                 return
             } else {
@@ -148,7 +142,6 @@ class TrainingExecution(
                     executedTraining.TrainingPlan[currentInterval].intervalType
                 )
             }
-            //check later needed
             delay(intervalTime.toLong() * 1000)
             advanceInterval()
         }

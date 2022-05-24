@@ -8,8 +8,8 @@
     <fragment
         android:id="@+id/audioCustomizationFragment"
         android:name="com.example.runningassistant.view.fragments.AudioCustomizationFragment"
-        android:label="fragment_audio_customization"
-        tools:layout="@layout/fragment_audio_customization" >
+        android:label="@string/customize_audio_title"
+        tools:layout="@layout/fragment_audio_customization">
         <action
             android:id="@+id/action_audioCustomizationFragment_to_mainFragment"
             app:destination="@id/mainFragment"
@@ -19,7 +19,7 @@
     <fragment
         android:id="@+id/mainFragment"
         android:name="com.example.runningassistant.view.fragments.MainFragment"
-        android:label="fragment_main"
+        android:label="@string/main_fragment_title"
         tools:layout="@layout/fragment_main" >
         <action
             android:id="@+id/action_mainFragment_to_audioCustomizationFragment"
@@ -46,6 +46,16 @@
                 app:nullable="true"
                 android:defaultValue="null" />
             <argument
+                android:name="intervalEndIndexes"
+                app:argType="string"
+                app:nullable="true"
+                android:defaultValue="null" />
+            <argument
+                android:name="speedsList"
+                app:argType="string"
+                app:nullable="true"
+                android:defaultValue="null" />
+            <argument
                 android:name="averageSpeed"
                 app:argType="float"
                 app:nullable="false"
@@ -55,7 +65,7 @@
     <fragment
         android:id="@+id/trainingSelectionFragment"
         android:name="com.example.runningassistant.view.fragments.TrainingSelectionFragment"
-        android:label="fragment_training_selection"
+        android:label="@string/training_selection_fragment_title"
         tools:layout="@layout/fragment_training_selection" >
         <action
             android:id="@+id/action_trainingSelectionFragment_to_trainingCreationFragment"
@@ -75,7 +85,7 @@
     <fragment
         android:id="@+id/trainingCreationFragment"
         android:name="com.example.runningassistant.view.fragments.TrainingCreationFragment"
-        android:label="fragment_training_creation"
+        android:label="@string/training_creation_fragment_title"
         tools:layout="@layout/fragment_training_creation" >
         <action
             android:id="@+id/action_trainingCreationFragment_to_trainingSelectionFragment"
@@ -91,7 +101,7 @@
     <fragment
         android:id="@+id/trainingSaveFragment"
         android:name="com.example.runningassistant.view.fragments.TrainingSaveFragment"
-        android:label="TrainingSaveFragment" >
+        android:label="@string/training_save_fragment_title" >
         <action
             android:id="@+id/action_trainingSaveFragment_to_mainFragment"
             app:destination="@id/mainFragment"
@@ -109,6 +119,16 @@
             android:defaultValue="0" />
         <argument
             android:name="pointsList"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="intervalEndIndexes"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="speedsList"
             app:argType="string"
             app:nullable="true"
             android:defaultValue="null" />

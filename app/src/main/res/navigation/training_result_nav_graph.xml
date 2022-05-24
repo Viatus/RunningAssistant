@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/training_result_nav_graph"
+    app:startDestination="@id/trainingResultsFragment">
+
+    <fragment
+        android:id="@+id/trainingResultsFragment"
+        android:name="com.example.runningassistant.view.fragments.TrainingResultsFragment"
+        android:label="@string/training_results_fragment_title" >
+        <action
+            android:id="@+id/action_trainingResultsFragment_to_trainingResultDetailsFragment"
+            app:destination="@id/trainingResultDetailsFragment" >
+            <argument
+                android:name="trainingResult"
+                app:argType="string"
+                app:nullable="true"
+                android:defaultValue="null" />
+        </action>
+    </fragment>
+    <fragment
+        android:id="@+id/trainingResultDetailsFragment"
+        android:name="com.example.runningassistant.view.fragments.TrainingResultDetailsFragment"
+        android:label="@string/training_details_fragment_title" >
+        <action
+            android:id="@+id/action_trainingResultDetailsFragment_to_trainingResultsFragment"
+            app:destination="@id/trainingResultsFragment"
+            app:popUpTo="@id/trainingResultDetailsFragment" />
+        <argument
+            android:name="trainingResult"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+    </fragment>
+</navigation>

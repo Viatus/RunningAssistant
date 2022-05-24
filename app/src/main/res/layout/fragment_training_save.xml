@@ -17,7 +17,7 @@
         <com.mapbox.maps.MapView
             android:id="@+id/finishedTrainingMapView"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="250dp"
             app:layout_constraintBottom_toTopOf="@id/totalDistanceTexView"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -117,7 +117,7 @@
             android:layout_height="30dp"
             android:background="@color/gray"
             android:padding="5dp"
-            android:text="@string/training_name_text"
+            android:text="@string/how_do_you_feel_text"
             android:textColor="@color/black"
             app:layout_constraintBottom_toTopOf="@id/conditionVeryBadButton"
             app:layout_constraintStart_toStartOf="parent"
@@ -181,13 +181,14 @@
             app:layout_constraintStart_toEndOf="@id/conditionGoodButton"
             app:layout_constraintTop_toBottomOf="@id/conditionLabel" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/saveTrainingResultButton"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_margin="20dp"
+            android:layout_height="70dp"
             android:text="@string/save_training_result_text"
-            android:textSize="15sp"
+            android:textSize="20sp"
+            android:insetBottom="0dp"
+            app:cornerRadius="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 

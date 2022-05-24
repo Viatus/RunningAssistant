@@ -16,7 +16,10 @@
             android:id="@+id/newIntervalDialogTitle"
             android:layout_width="match_parent"
             android:layout_height="50dp"
+            android:gravity="center"
             android:text="@string/choose_parameters_for_interval_text"
+            android:textColor="@color/black"
+            android:textSize="20sp"
             app:layout_constraintBottom_toTopOf="@id/intervalTypeSpinner"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -25,43 +28,50 @@
             android:id="@+id/intervalTypeSpinner"
             android:layout_width="match_parent"
             android:layout_height="50dp"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginTop="10dp"
+            android:textSize="15sp"
             app:layout_constraintBottom_toTopOf="@id/intervalMesTypeSpinner"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/newIntervalDialogTitle"
-            android:layout_margin="10dp"/>
+            app:layout_constraintTop_toBottomOf="@id/newIntervalDialogTitle" />
 
         <Spinner
             android:id="@+id/intervalMesTypeSpinner"
             android:layout_width="match_parent"
             android:layout_height="50dp"
+            android:layout_margin="10dp"
+            android:textSize="15sp"
             app:layout_constraintBottom_toTopOf="@id/intervalGoal"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/intervalTypeSpinner"
-            android:layout_margin="10dp"/>
+            app:layout_constraintTop_toBottomOf="@id/intervalTypeSpinner" />
 
         <EditText
             android:id="@+id/intervalGoal"
             android:layout_width="0dp"
             android:layout_height="50dp"
-            android:inputType="number"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/intervalMesTypeSpinner"
-            app:layout_constraintEnd_toStartOf="@id/intervalGoalLabel"
-            app:layout_constraintHorizontal_weight="0.8"
             android:layout_marginVertical="10dp"
             android:layout_marginStart="10dp"
-            android:importantForAutofill="no" />
+            android:importantForAutofill="no"
+            android:inputType="number"
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            app:layout_constraintEnd_toStartOf="@id/intervalGoalLabel"
+            app:layout_constraintHorizontal_weight="0.75"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/intervalMesTypeSpinner" />
 
         <TextView
             android:id="@+id/intervalGoalLabel"
             android:layout_width="0dp"
             android:layout_height="50dp"
-            app:layout_constraintTop_toBottomOf="@id/intervalMesTypeSpinner"
-            app:layout_constraintStart_toEndOf="@id/intervalGoal"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_weight="0.2"
             android:layout_marginVertical="10dp"
-            android:layout_marginEnd="10dp"/>
+            android:layout_marginEnd="10dp"
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_weight="0.25"
+            app:layout_constraintStart_toEndOf="@id/intervalGoal"
+            app:layout_constraintTop_toBottomOf="@id/intervalMesTypeSpinner" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

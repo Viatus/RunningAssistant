@@ -3,11 +3,11 @@ package com.example.runningassistant.viewmodel
 import android.content.Context
 import android.location.Location
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.runningassistant.model.IntervalItem
-import com.example.runningassistant.model.TrainingExecution
-import com.example.runningassistant.model.TrainingResultTableModel
-import com.example.runningassistant.model.TrainingTableModel
+import androidx.lifecycle.viewModelScope
+import com.example.runningassistant.model.*
+import com.example.runningassistant.repository.RetrofitRepo
 import com.example.runningassistant.repository.TrainingRepo
 import com.mapbox.geojson.Point
 import kotlinx.coroutines.*
@@ -65,7 +65,8 @@ class TrainingViewModel : ViewModel() {
         totalDistance: Float,
         totalTime: Int,
         condition: Int,
-        averageSpeed: Float,
+        intervalEndIndexes: List<Int>,
+        speedsList: List<Float>,
         currentDate: Date
     ) {
         CoroutineScope(Dispatchers.IO).launch {
@@ -75,7 +76,8 @@ class TrainingViewModel : ViewModel() {
                 totalDistance,
                 totalTime,
                 condition,
-                averageSpeed,
+                intervalEndIndexes,
+                speedsList,
                 currentDate
             )
         }
@@ -115,4 +117,18 @@ class TrainingViewModel : ViewModel() {
         super.onCleared()
         scope.coroutineContext.cancelChildren()
     }
+
+    //weather staff
+    val liveDataErrorMessage = MutableLiveData<String>()
+    val liveDataCurrentWeather = MutableLiveData<CurrentWeatherModel>()
+
+    fun getCurrentWeather(longitude: Float, latitude: Float) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val response = RetrofitRepo.getCurrentWeather(longitude, latitude)
+            if (response.isSuccessful) {
+                liveDataCurrentWeather.postValue(response.body()?.currentWeather)
+            }
+        }
+    }
+
 }

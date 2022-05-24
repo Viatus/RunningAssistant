@@ -17,9 +17,10 @@
         android:theme="@style/Theme.RunningAssistant">
         <activity
             android:name=".view.TrainingActivity"
-            android:screenOrientation="portrait"
+            android:parentActivityName=".view.MainActivity"
+            android:exported="false"
             android:launchMode="singleTop"
-            android:exported="false" >
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.runningassistant.view.MainActivity" />

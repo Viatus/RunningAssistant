@@ -19,39 +19,28 @@
         android:layout_height="match_parent"
         tools:context=".view.fragments.TrainingResultsFragment">
 
-        <TextView
-            android:id="@+id/trainingsResultsListLabel"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:background="@color/gray"
-            android:padding="5dp"
-            android:text="@string/training_results_text"
-            android:textSize="20sp"
-            android:textColor="@color/black"
-            app:layout_constraintBottom_toTopOf="@id/trainingResultsRecyclerView"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/trainingResultsRecyclerView"
             onTrainingResultClickHandler="@{onTrainingResultClickHandler}"
             trainingResults="@{trainingResultsList}"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/trainingsResultsListLabel"
+            android:layout_height="0dp"
             android:background="@color/light_gray"
-            />
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonGoToTrainingScreen"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_margin="10dp"
+            android:layout_height="70dp"
             android:text="@string/go_to_training_screen_text"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            android:insetBottom="0dp"
+            app:cornerRadius="0dp"
+            />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

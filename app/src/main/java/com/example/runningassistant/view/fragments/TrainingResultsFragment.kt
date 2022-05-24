@@ -10,14 +10,18 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.example.runningassistant.R
 import com.example.runningassistant.databinding.FragmentTrainingResultsBinding
+import com.example.runningassistant.model.TrainingResultTableModel
 import com.example.runningassistant.view.MainActivity
 import com.example.runningassistant.view.TrainingActivity
 import com.example.runningassistant.view.adapters.TrainingResultsRecyclerViewAdapter
 import com.example.runningassistant.viewmodel.TrainingViewModel
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 
 class TrainingResultsFragment : Fragment(),
     TrainingResultsRecyclerViewAdapter.OnTrainingResultClickHandlerInterface {
@@ -60,8 +64,15 @@ class TrainingResultsFragment : Fragment(),
         }
     }
 
-    override fun onTrainingResultsClicked() {
-        //nothing for now
+    override fun onTrainingResultsClicked(trainingResult: TrainingResultTableModel) {
+        val gson = Gson()
+        val type = object : TypeToken<TrainingResultTableModel>() {}.type
+        val trainingResultStr = gson.toJson(trainingResult, type)
+        val action =
+            TrainingResultsFragmentDirections.actionTrainingResultsFragmentToTrainingResultDetailsFragment(
+                trainingResultStr
+            )
+        findNavController().navigate(action)
     }
 
 }
