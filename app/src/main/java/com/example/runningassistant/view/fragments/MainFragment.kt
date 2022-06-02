@@ -4,8 +4,13 @@ import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
+import android.media.AudioAttributes
+import android.media.AudioFocusRequest
+import android.media.AudioManager
+import android.os.Build
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
+import android.speech.tts.UtteranceProgressListener
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -14,7 +19,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
@@ -59,6 +63,7 @@ class MainFragment : Fragment() {
 
     private var tts: TextToSpeech? = null
     private var isTtsInitFinished = false
+    private var isAudioEnabled = false
 
     private var isVoiceTravelledDistance = false
     private var isVoicePassedTime = false
@@ -176,17 +181,17 @@ class MainFragment : Fragment() {
             )
         }
 
+        tts = TextToSpeech(requireContext(), ttsListener)
+
         return binding.root
     }
 
     private fun setupAudio(): Pair<Int, Int> {
         val sharedPref = activity?.getPreferences(Context.MODE_PRIVATE)
         if (sharedPref != null) {
-            val isAudioEnabled =
+            isAudioEnabled =
                 sharedPref.getBoolean(getString(R.string.preference_enable_audio_key), false)
             if (isAudioEnabled) {
-                tts = TextToSpeech(requireContext(), ttsListener)
-
                 isVoiceAverageSpeed =
                     sharedPref.getBoolean(getString(R.string.preference_average_speed_key), false)
                 isVoiceTravelledDistance = sharedPref.getBoolean(
@@ -234,7 +239,17 @@ class MainFragment : Fragment() {
     private val ttsListener = TextToSpeech.OnInitListener { status ->
         if (status == TextToSpeech.SUCCESS) {
             val result = tts!!.setLanguage(Locale.US)
+            tts!!.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
+                override fun onDone(p0: String?) {
+                    abandonAudioFocus()
+                }
 
+                override fun onError(p0: String?) {
+                }
+
+                override fun onStart(p0: String?) {
+                }
+            })
             if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
                 Toast.makeText(requireContext(), "The language is not supported", Toast.LENGTH_LONG)
             } else {
@@ -404,8 +419,9 @@ class MainFragment : Fragment() {
             totalTime: Int,
             intervalEndIndexes: List<Int>
         ) {
-            if (isTtsInitFinished) {
-                tts!!.speak("Training is over", TextToSpeech.QUEUE_ADD, null, "")
+            if (isTtsInitFinished && isAudioEnabled) {
+                ttsNotificationText = "Training is over"
+                playNotification()
             }
             val mapBoxNavigation = if (MapboxNavigationProvider.isCreated()) {
                 MapboxNavigationProvider.retrieve()
@@ -463,7 +479,7 @@ class MainFragment : Fragment() {
             goal: Float,
             intervalType: Int
         ) {
-            if (isTtsInitFinished) {
+            if (isTtsInitFinished && isAudioEnabled) {
                 val str = StringBuilder("Interval started.")
                 when (intervalType) {
                     IntervalItem.INTERVAL_TYPE_SLOW -> str.append("Slow speed")
@@ -476,7 +492,8 @@ class MainFragment : Fragment() {
                 } else {
                     str.append("Time: ${(goal / 60).toInt()} minutes and  ${goal % 60} seconds")
                 }
-                tts!!.speak(str.toString(), TextToSpeech.QUEUE_ADD, null, "")
+                ttsNotificationText = str.toString()
+                playNotification()
             }
             val typeStr = when (intervalType) {
                 IntervalItem.INTERVAL_TYPE_SLOW ->
@@ -508,7 +525,7 @@ class MainFragment : Fragment() {
             averageIntervalSpeed: Float,
             totalDistanceCovered: Float
         ) {
-            if (isTtsInitFinished) {
+            if (isTtsInitFinished && isAudioEnabled) {
                 val str = StringBuilder("")
 
                 if (isVoicePassedTime) {
@@ -525,7 +542,8 @@ class MainFragment : Fragment() {
                 }
 
                 if (str.toString() != "") {
-                    tts!!.speak(str.toString(), TextToSpeech.QUEUE_ADD, null, "")
+                    ttsNotificationText = str.toString()
+                    playNotification()
                 }
             }
             Toast.makeText(
@@ -535,4 +553,96 @@ class MainFragment : Fragment() {
             ).show()
         }
     }
+
+    private var ttsNotificationText = ""
+    private var isAudioFocusGranted = false
+
+    private var audioManager: AudioManager? = null
+
+    private fun playNotification() {
+        if (isAudioFocusGranted) {
+            tts!!.speak(ttsNotificationText, TextToSpeech.QUEUE_FLUSH, null, "")
+        } else {
+            requestAudioFocus()
+        }
+    }
+
+    private fun requestAudioFocus() {
+        Log.i("audio focus", "requesting focus")
+        if (audioManager == null) {
+            audioManager = activity?.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        }
+        val result = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            audioManager?.requestAudioFocus(
+                AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK).run {
+                    setAudioAttributes(AudioAttributes.Builder().run {
+                        setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                        setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                        build()
+                    })
+                    setAcceptsDelayedFocusGain(true)
+                    setOnAudioFocusChangeListener(audioFocusListener)
+                    build()
+                })
+        } else {
+            audioManager?.requestAudioFocus(
+                audioFocusListener,
+                AudioManager.STREAM_NOTIFICATION,
+                AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK
+            )
+        }
+
+        when (result) {
+            AudioManager.AUDIOFOCUS_REQUEST_GRANTED -> {
+                isAudioFocusGranted = true
+                if (isTtsInitFinished) {
+                    tts!!.speak(ttsNotificationText, TextToSpeech.QUEUE_FLUSH, null, "")
+                }
+                Log.i("audio focus", "gained audio focus")
+
+            }
+        }
+    }
+
+    private fun abandonAudioFocus() {
+        if (audioManager == null) {
+            audioManager = activity?.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        }
+        Log.i("audio focus", "abandoning focus")
+        val result = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            audioManager?.abandonAudioFocusRequest(
+                AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK).run {
+                    setOnAudioFocusChangeListener(audioFocusListener)
+                    build()
+                })
+        } else {
+            audioManager?.abandonAudioFocus(
+                audioFocusListener
+            )
+        }
+        if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+            isAudioFocusGranted = false
+        }
+    }
+
+    private val audioFocusListener: AudioManager.OnAudioFocusChangeListener =
+        object : AudioManager.OnAudioFocusChangeListener {
+            override fun onAudioFocusChange(focusChange: Int) {
+                Log.i("audio focus", "focus changed to $focusChange")
+                when (focusChange) {
+                    AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK -> {
+                        isAudioFocusGranted = true
+                        if (isTtsInitFinished) {
+                            tts!!.speak(ttsNotificationText, TextToSpeech.QUEUE_FLUSH, null, "")
+                        }
+                        Log.i("audio focus", "gained audio focus")
+                        abandonAudioFocus()
+                    }
+                    AudioManager.AUDIOFOCUS_LOSS -> {
+                        isAudioFocusGranted = false
+                        Log.i("audio focus", "lost audio focus")
+                    }
+                }
+            }
+        }
 }

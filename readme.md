@@ -1,0 +1,3 @@
+# RunningAssistant
+
+Android app for running. Allows to create training plans and upon their execution tracks your route on the map(Mapbox Navigation is used) and via audio notifications updates you on your progress and current stats(e.g. current or interval speed). Training results, including route and statistics, are saved via Room upon training completion and can be viewed any time. Also displays current weather at user's location(weather data is provided by Open Meteo API).
